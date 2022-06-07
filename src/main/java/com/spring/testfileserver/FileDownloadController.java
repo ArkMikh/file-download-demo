@@ -18,15 +18,12 @@ import java.nio.file.attribute.BasicFileAttributes;
 public class FileDownloadController{
 
     //Указываем рабочую папку
-    @Value("{FileDownloadController.sourcePath}")
+    @Value("${FileDownloadController.sourcePath}")
     private String folderPath;
 
     //Сканирует папку на наличие всех файлов и добавляет их в массив файлов
     @RequestMapping("/")
     public String showFiles(Model model) throws IOException {
-        Path path=Paths.get(folderPath);
-        Files.walkFileTree(path, new MyFileVisitor());
-
         File folder=new File(folderPath);
         File[] listOfFiles=folder.listFiles();
         //Добавляет массив файлов в модель для передачи в showFiles.jsp
@@ -58,34 +55,4 @@ public class FileDownloadController{
     }
 
 
-
-
-    static class MyFileVisitor implements FileVisitor<Path> {
-
-
-        @Override
-        public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
-            return FileVisitResult.CONTINUE;
-        }
-
-        @Override
-        public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-            int pathLength=file.getNameCount();
-            System.out.println("visitFile: " + file);
-            FileWriter fileWriter=new FileWriter(new File("dir_info.info"));
-            fileWriter.write(file.getFileSystem().toString());
-            fileWriter.close();
-            return FileVisitResult.CONTINUE;
-        }
-
-        @Override
-        public FileVisitResult visitFileFailed(Path file, IOException exc) throws IOException {
-            return FileVisitResult.TERMINATE;
-        }
-
-        @Override
-        public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
-            return FileVisitResult.CONTINUE;
-        }
-    }
 }
